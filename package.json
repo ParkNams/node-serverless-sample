@@ -1,0 +1,26 @@
+{
+  "name": "serverless",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "sh deploy.sh",
+    "prod": "sh deploy.sh prod"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless-latest-layer-version": "^2.1.1",
+    "serverless-layers": "^2.5.4",
+    "serverless-offline": "^8.8.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "mysql2": "^2.3.3",
+    "node-cache": "^5.1.2",
+    "serverless-dotenv-plugin": "^4.0.1",
+    "uuid": "^8.3.2"
+  }
+}

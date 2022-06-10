@@ -1,0 +1,175 @@
+service: node-serverless-nspark
+
+frameworkVersion: '3'
+
+useDotenv: false
+
+custom:
+  STAGE: ${self:provider.stage}
+  ENV: ${file(./env.js):ENV}
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ap-southeast-2
+  stage: ${opt:stage, 'dev'} # -s 옵션을 받으면 사용하고, 그렇지 않으면 기본 dev 스테이지 사용
+  environment:
+    ENVIRONMENT: ${self:custom.ENV.${self:custom.STAGE}.ENVIRONMENT}
+    NODE_PATH: ${self:custom.ENV.${self:custom.STAGE}.NODE_PATH}
+    MYSQL_HOST: ${self:custom.ENV.${self:custom.STAGE}.MYSQL_HOST}
+    MYSQL_USER: ${self:custom.ENV.${self:custom.STAGE}.MYSQL_USER}
+    MYSQL_PASSWORD: ${self:custom.ENV.${self:custom.STAGE}.MYSQL_PASSWORD}
+    MYSQL_DATABASE: ${self:custom.ENV.${self:custom.STAGE}.MYSQL_DATABASE}
+    TOOL_LOCATION: ${self:custom.ENV.${self:custom.STAGE}.TOOL_LOCATION}
+    API_KEY: ${self:custom.ENV.${self:custom.STAGE}.API_KEY}
+  deploymentBucket:
+    name: ${self:custom.ENV.${self:custom.STAGE}.S3_BUCKET}
+  deploymentPrefix: ${self:custom.ENV.${self:custom.STAGE}.S3_PREFIX}
+
+functions:
+  test:
+    handler: router/test.handler
+    events:
+      - httpApi:
+          path: /test
+          method: get
+    package:
+      individually: true
+      patterns:
+        - '!node_modules/**'
+        - '!router/**'
+        - 'router/test.js'
+        - '!controller/**'
+        - '!tool/**'
+        - '!.env'
+        - '!modules/**'
+        - '!deploy.sh'
+        - 'controller/test.js'
+        - '!env.js'
+  user:
+    handler: router/user.handler
+    events:
+      - httpApi:
+          path: /user
+          method: post
+    package:
+      individually: true
+      patterns:
+        - '!node_modules/**'
+        - '!router/**'
+        - 'router/user.js'
+        - '!controller/**'
+        - 'controller/user.js'
+        - '!tool/**'
+        - '!.env'
+        - '!modules/**'
+        - '!deploy.sh'
+        - '!env.js'
+    layers:
+      - { Ref: NodeModulesLambdaLayer }
+      - { Ref: NodeToolsLambdaLayer }
+  trigger:
+    handler: router/trigger.handler
+    events:
+      - s3:
+          bucket: nspark-lambda-event-trigger-${self:custom.STAGE}
+          event: s3:ObjectCreated:*
+    package:
+      individually: true
+      patterns:
+        - '!node_modules/**'
+        - '!router/**'
+        - 'router/trigger.js'
+        - '!controller/**'
+        - '!tool/**'
+        - '!.env'
+        - '!modules/**'
+        - '!deploy.sh'
+        - '!env.js'
+    layers:
+      - { Ref: NodeModulesLambdaLayer }
+      - { Ref: NodeToolsLambdaLayer }
+  auth:
+    handler: router/auth.handler
+    package:
+      individually: true
+      patterns:
+        - '!node_modules/**'
+        - '!router/**'
+        - 'router/auth.js'
+        - '!controller/**'
+        - '!tool/**'
+        - '!.env'
+        - '!modules/**'
+        - '!deploy.sh'
+        - '!env.js'
+    layers:
+      - { Ref: NodeModulesLambdaLayer }
+      - { Ref: NodeToolsLambdaLayer }    
+
+plugins:
+  - serverless-offline
+  - serverless-latest-layer-version
+  - serverless-dotenv-plugin
+
+layers:
+  nodeTools:
+    path: ./tool
+    name: nodeTools
+    description: node-test-tools
+    compatibleRuntimes:
+      - nodejs14.x
+  nodeModules:
+    path: ./modules
+    name: nodeModules
+    description: node-module-list
+    compatibleRuntimes:
+      - nodejs14.x
+#package:
+#  exclude:
+#    - node_modules/**
+    
+#      - websocket: $connect
+#      - s3: ${env:BUCKET}
+#      - schedule: rate(10 minutes)
+#      - sns: greeter-topic
+#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
+#      - alexaSkill: amzn1.ask.skill.xx-xx-xx-xx
+#      - alexaSmartHome: amzn1.ask.skill.xx-xx-xx-xx
+#      - iot:
+#          sql: "SELECT * FROM 'some_topic'"
+#      - cloudwatchEvent:
+#          event:
+#            source:
+#              - "aws.ec2"
+#            detail-type:
+#              - "EC2 Instance State-change Notification"
+#            detail:
+#              state:
+#                - pending
+#      - cloudwatchLog: '/aws/lambda/hello'
+#      - cognitoUserPool:
+#          pool: MyUserPool
+#          trigger: PreSignUp
+#      - alb:
+#          listenerArn: arn:aws:elasticloadbalancing:us-east-1:XXXXXX:listener/app/my-load-balancer/50dc6c495c0c9188/
+#          priority: 1
+#          conditions:
+#            host: example.com
+#            path: /hello
+
+#    Define function environment variables here
+#    environment:
+#      variable2: value2
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
