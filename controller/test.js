@@ -4,7 +4,7 @@ module.exports = {
       statusCode: 200,
       body: JSON.stringify(
         {
-          message: "it is serverless callback test",
+          message: "it is serverless callback test1",
           body: event.body,
         },
         null,

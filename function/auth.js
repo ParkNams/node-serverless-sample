@@ -2,45 +2,17 @@ require("dotenv").config();
 
 exports.handler = function (event, context, callback) {
   console.log("Received event:", JSON.stringify(event, null, 2));
-
-  // A simple request-based authorizer example to demonstrate how to use request
-  // parameters to allow or deny a request. In this example, a request is
-  // authorized if the client-supplied headerauth1 header, QueryString1
-  // query parameter, and stage variable of StageVar1 all match
-  // specified values of 'headerValue1', 'queryValue1', and 'stageValue1',
-  // respectively.
-
-  // Retrieve request parameters from the Lambda function input:
-  var { authcode } = event.headers;
+  var { token, authcode } = event.headers;
   var queryStringParameters = event.queryStringParameters;
   var pathParameters = event.pathParameters;
   var stageVariables = event.stageVariables;
 
-  // Parse the input for the parameter values
-  //   var tmp = event.methodArn.split(":");
-  //   var apiGatewayArnTmp = tmp[5].split("/");
-  //   var awsAccountId = tmp[4];
-  //   var region = tmp[3];
-  //   var restApiId = apiGatewayArnTmp[0];
-  //   var stage = apiGatewayArnTmp[1];
-  //   var method = apiGatewayArnTmp[2];
-  //   var resource = "/"; // root resource
-  //   if (apiGatewayArnTmp[3]) {
-  //     resource += apiGatewayArnTmp[3];
-  //   }
-
-  // Perform authorization to return the Allow policy for correct parameters and
-  // the 'Unauthorized' error, otherwise.
   var authResponse = {};
   var condition = {};
   condition.IpAddress = {};
-  console.log(`authcode: ${authcode}`);
-  if (
-    // headers.headerauth1 === "headerValue1" &&
-    // queryStringParameters.QueryString1 === "queryValue1" &&
-    // stageVariables.StageVar1 === "stageValue1"
-    authcode === process.env.API_KEY
-  ) {
+  console.log(`Received Headers: ${JSON.stringify(event.headers, null, 2)}`);
+  //console.log(`authcode: ${authcode}`);
+  if (authcode === process.env.API_KEY) {
     callback(null, generateAllow("user", event.methodArn));
   } else {
     callback("Unauthorized");

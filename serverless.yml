@@ -1,6 +1,6 @@
 service: node-serverless-nspark
 
-frameworkVersion: '3'
+frameworkVersion: "3"
 
 useDotenv: false
 
@@ -28,7 +28,7 @@ provider:
 
 functions:
   test:
-    handler: router/test.handler
+    handler: function/test.handler
     events:
       - httpApi:
           path: /test
@@ -36,18 +36,18 @@ functions:
     package:
       individually: true
       patterns:
-        - '!node_modules/**'
-        - '!router/**'
-        - 'router/test.js'
-        - '!controller/**'
-        - '!tool/**'
-        - '!.env'
-        - '!modules/**'
-        - '!deploy.sh'
-        - 'controller/test.js'
-        - '!env.js'
+        - "!node_modules/**"
+        - "!function/**"
+        - "function/test.js"
+        - "!controller/**"
+        - "!tool/**"
+        - "!.env"
+        - "!modules/**"
+        - "!deploy.sh"
+        - "controller/test.js"
+        - "!env.js"
   user:
-    handler: router/user.handler
+    handler: function/user.handler
     events:
       - httpApi:
           path: /user
@@ -55,21 +55,21 @@ functions:
     package:
       individually: true
       patterns:
-        - '!node_modules/**'
-        - '!router/**'
-        - 'router/user.js'
-        - '!controller/**'
-        - 'controller/user.js'
-        - '!tool/**'
-        - '!.env'
-        - '!modules/**'
-        - '!deploy.sh'
-        - '!env.js'
+        - "!node_modules/**"
+        - "!function/**"
+        - "function/user.js"
+        - "!controller/**"
+        - "controller/user.js"
+        - "!tool/**"
+        - "!.env"
+        - "!modules/**"
+        - "!deploy.sh"
+        - "!env.js"
     layers:
       - { Ref: NodeModulesLambdaLayer }
       - { Ref: NodeToolsLambdaLayer }
   trigger:
-    handler: router/trigger.handler
+    handler: function/trigger.handler
     events:
       - s3:
           bucket: nspark-lambda-event-trigger-${self:custom.STAGE}
@@ -77,35 +77,35 @@ functions:
     package:
       individually: true
       patterns:
-        - '!node_modules/**'
-        - '!router/**'
-        - 'router/trigger.js'
-        - '!controller/**'
-        - '!tool/**'
-        - '!.env'
-        - '!modules/**'
-        - '!deploy.sh'
-        - '!env.js'
+        - "!node_modules/**"
+        - "!function/**"
+        - "function/trigger.js"
+        - "!controller/**"
+        - "!tool/**"
+        - "!.env"
+        - "!modules/**"
+        - "!deploy.sh"
+        - "!env.js"
     layers:
       - { Ref: NodeModulesLambdaLayer }
       - { Ref: NodeToolsLambdaLayer }
   auth:
-    handler: router/auth.handler
+    handler: function/auth.handler
     package:
       individually: true
       patterns:
-        - '!node_modules/**'
-        - '!router/**'
-        - 'router/auth.js'
-        - '!controller/**'
-        - '!tool/**'
-        - '!.env'
-        - '!modules/**'
-        - '!deploy.sh'
-        - '!env.js'
+        - "!node_modules/**"
+        - "!function/**"
+        - "function/auth.js"
+        - "!controller/**"
+        - "!tool/**"
+        - "!.env"
+        - "!modules/**"
+        - "!deploy.sh"
+        - "!env.js"
     layers:
       - { Ref: NodeModulesLambdaLayer }
-      - { Ref: NodeToolsLambdaLayer }    
+      - { Ref: NodeToolsLambdaLayer }
 
 plugins:
   - serverless-offline
@@ -128,7 +128,7 @@ layers:
 #package:
 #  exclude:
 #    - node_modules/**
-    
+
 #      - websocket: $connect
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)

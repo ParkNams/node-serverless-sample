@@ -15,5 +15,6 @@ npm run prod
 개별 함수 deploy
 
 ```
-sls deploy function -f [func name]
+sh deploy.sh [deploy env] [function name]
+# or 
 ```
