@@ -47,10 +47,32 @@ functions:
         - "controller/test.js"
         - "!env.js"
   user:
-    handler: function/user.handler
+    handler: function/user.createUserHandler
     events:
       - httpApi:
           path: /user
+          method: post
+    package:
+      individually: true
+      patterns:
+        - "!node_modules/**"
+        - "!function/**"
+        - "function/user.js"
+        - "!controller/**"
+        - "controller/user.js"
+        - "!tool/**"
+        - "!.env"
+        - "!modules/**"
+        - "!deploy.sh"
+        - "!env.js"
+    layers:
+      - { Ref: NodeModulesLambdaLayer }
+      - { Ref: NodeToolsLambdaLayer }
+  getUser:
+    handler: function/user.getUserHandler
+    events:
+      - httpApi:
+          path: /user/get
           method: post
     package:
       individually: true

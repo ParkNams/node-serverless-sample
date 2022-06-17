@@ -10,16 +10,18 @@ const { signTokenByUser, verifyToken } = require(jwtPath);
 module.exports = {
   createUser(params, callback) {
     signTokenByUser(params, (err, result) => {
+      console.log(`[err] : ${err}`);
       if (err) {
-        callback(err);
+        callback(null, err);
       } else {
-        callback({
+        callback(null, {
           statusCode: 200,
           body: JSON.stringify({
             uuid: uuid.v4(),
             //data,
+            message: "success",
             data: {
-              result,
+              ...result,
             },
           }),
           headers: { "Content-Type": "application/json" },
@@ -27,5 +29,22 @@ module.exports = {
       }
     });
   },
-  getUser(params, callback) {},
+  getUser(params, callback) {
+    verifyToken(params, (err, result) => {
+      if (err) {
+        callback(err);
+      } else {
+        callback(null, {
+          statusCode: 200,
+          body: JSON.stringify({
+            uuid: uuid.v4(),
+            data: {
+              ...result,
+            },
+          }),
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    });
+  },
 };

@@ -5,14 +5,21 @@ const signTokenByUser = (params, callback) => {
   try {
     if (id && name) {
       const token = jwt.sign({ id, name }, "private");
+      console.log(`token: ${token}`);
       callback(null, { token, ...params });
     } else {
       callback({
-        message: "id or name not exist",
+        statusCode: 400,
+        body: JSON.stringify({ message: "id or name not exist" }),
+        headers: { "Content-Type": "application/json" },
       });
     }
   } catch (e) {
-    callback(e);
+    callback({
+      statusCode: 500,
+      body: JSON.stringify({ err: e }),
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
 
@@ -29,4 +36,9 @@ const verifyToken = (params, callback) => {
   } catch (e) {
     callback(e);
   }
+};
+
+module.exports = {
+  signTokenByUser,
+  verifyToken,
 };

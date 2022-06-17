@@ -5,25 +5,11 @@ dotenv.config();
 //const { myCache } = require(process.env.ENVIRONMENT === "local" ? "./../tool/cache":process.env.TOOL_LOCATION + "cache")
 const userController = require("../controller/user");
 const uuid = require("uuid");
-exports.handler = async (event, context, callback) => {
+exports.createUserHandler = (event, context, callback) => {
   try {
     const { body, headers } = event;
-    console.log(body);
-    if (body.route === "get") {
-      userController.getUser({ ...body, ...headers }, callback);
-    } else if (body.route === "create") {
-      userController.createUser({ ...body, ...headers }, callback);
-    } else {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          uuid: uuid.v4(),
-          //data,
-          err: "not route",
-        }),
-        headers: { "Content-Type": "application/json" },
-      };
-    }
+    const bodyJson = JSON.parse(body);
+    userController.createUser({ ...bodyJson }, callback);
     // return {
     //   statusCode: 200,
     //   body: JSON.stringify({
@@ -35,6 +21,16 @@ exports.handler = async (event, context, callback) => {
     // };
   } catch (e) {
     console.log(e);
+    callback(e);
+  }
+};
+
+exports.getUserHandler = (event, context, callback) => {
+  try {
+    const { body } = event;
+    const bodyJson = JSON.parse(body);
+    userController.getUser({ ...bodyJson }, callback);
+  } catch (e) {
     callback(e);
   }
 };
