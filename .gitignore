@@ -245,4 +245,5 @@ fabric.properties
 .idea/misc.xml
 .idea/aws.xml
 
+reqTest.sh
 env.js
