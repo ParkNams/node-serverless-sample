@@ -7,7 +7,7 @@ echo deploy start
 mkdir ./modules
 cp -R node_modules ./modules
 
-#if [ ! $1 == '' ]; then
+#if [ ! $1 == '' ]; then !!
 if [ $# == 0 ]; then
     echo deploy1
     sls deploy    
