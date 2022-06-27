@@ -1,10 +1,12 @@
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const SECRET_KEY = process.env.SECRET_KEY;
 
 const signTokenByUser = (params, callback) => {
   const { id, name } = params;
   try {
     if (id && name) {
-      const token = jwt.sign({ id, name }, "private");
+      const token = jwt.sign({ id, name }, SECRET_KEY);
       console.log(`token: ${token}`);
       callback(null, { token, ...params });
     } else {
@@ -26,7 +28,7 @@ const signTokenByUser = (params, callback) => {
 const verifyToken = (params, callback) => {
   const { token } = params;
   try {
-    jwt.verify(token, "private", (err, decoded) => {
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
       if (err) {
         callback(err);
       } else {
